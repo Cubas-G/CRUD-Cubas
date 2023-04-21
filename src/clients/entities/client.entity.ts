@@ -17,6 +17,6 @@ export class Client {
     number:number;
 
     @Column({type:'text'})
-    dni:string;    
+    ced:string;    
 
 }

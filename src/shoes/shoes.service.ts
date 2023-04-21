@@ -1,45 +1,85 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateShoesDto } from './dto/create-shoes.dto';
-import { Shoes } from './entities/shoes.entity';
+import { CreateShoeDto } from './dto/create-shoe.dto';
+import { UpdateShoeDto } from './dto/update-shoe.dto';
+import { Shoe } from './entities/shoe.entity';
+import { ShoeImage } from './entities/shoe.image.entities';
+
+
 
 @Injectable()
 export class ShoesService {
-  constructor(
-    @InjectRepository(Shoes)
-    private readonly shoesRepository: Repository<Shoes>
-  ){}
+constructor(
+
+@InjectRepository(Shoe)
+private readonly shoeRepository: Repository<Shoe>,
+
+@InjectRepository(ShoeImage)
+private readonly ShoeImageRepository: Repository<ShoeImage>
 
 
-  async create(createShoesDto: CreateShoesDto) {
-    const shoes = await this.shoesRepository.create(createShoesDto)
-    await this.shoesRepository.save(shoes)
+){}
 
-    return shoes; 
+
+/* async create(createShoeDto: CreateShoeDto) {
+ const shoe = await this.shoeRepository.create(createShoeDto);
+ await this.shoeRepository.save(shoe);
+    return shoe;
   }
-
+   */
+   
+  async create(shoeDto: CreateShoeDto) {
+    const { images = [], ...detalleShoe } = shoeDto;
+    const shoe = await this.shoeRepository.create({
+      ...detalleShoe,
+      images: images.map((image) => this.ShoeImageRepository.create({url: image}),
+      ),
+    }); 
+    
+    await this.shoeRepository.save(shoe);
+    return shoe;
+    }
+   
+   
   findAll() {
-    return this.shoesRepository.find();
+    return this.shoeRepository.find();
   }
+  
 
   findOne(id: string) {
-    return this.shoesRepository.findOneBy({id});
+    return this.shoeRepository.findOneBy({id});
   }
 
-  async update(id: string, updateShoesDto: CreateShoesDto) {
-    const findShoes = await this.findOne(id);
-    const updatedShoes = await this.shoesRepository.merge(
-      findShoes,
-      updateShoesDto
-    )
-    return this.shoesRepository.save(updatedShoes);
-  }
+  
+ /* async update(id: string, updateShoeDto: UpdateShoeDto) {
+  const shoe = await this.findOne(id);
+  const updateShoe = await this.shoeRepository.merge(
+  shoe, UpdateShoeDto);
+  
+    return this.shoeRepository.update(id, updateShoe);
+  } */
 
   async remove(id: string) {
-    const shoes = await this.findOne(id);
-    await this.shoesRepository.remove(shoes);
-    return'Shoes is removed successfully';
-  }
+  const shoe = await this.findOne(id);
+  await this.shoeRepository.remove(shoe);
+    return 'Shoe removed successfully';
+  } 
+   
+   
+   
+   
+   
+   
+   //Agregado En clase de practica
+   
+   async update(id: string, cambios: CreateShoeDto){
+   const shoe = await this.shoeRepository.preload({
+   id: id, 
+   ...cambios, 
+   images: [],
+   });
+   await this.shoeRepository.save(shoe);
+   return shoe;
+   } 
 }
-

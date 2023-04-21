@@ -1,14 +1,15 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { ShoesService } from './shoes.service';
-import { CreateShoesDto } from './dto/create-shoes.dto';
+import { CreateShoeDto } from './dto/create-shoe.dto';
+import {UpdateShoeDto} from './dto/update-shoe.dto';
 
 @Controller('shoes')
 export class ShoesController {
   constructor(private readonly shoesService: ShoesService) {} 
 
   @Post()
-  create(@Body() createShoesDto: CreateShoesDto) {
-    return this.shoesService.create(createShoesDto);
+  create(@Body() createShoeDto: CreateShoeDto) {
+    return this.shoesService.create(createShoeDto);
   }
 
   @Get()
@@ -23,8 +24,8 @@ export class ShoesController {
 
   @Patch(':id')
   update(
-    @Param('id', ParseUUIDPipe) id: string, 
-    @Body() updateShoesDto: CreateShoesDto) {
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateShoesDto: CreateShoeDto) {
     return this.shoesService.update(id, updateShoesDto);
   }
 

@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
-export class CreateClientDto {
+import { IsString, IsNotEmpty, IsNumber, IsArray, IsOptional } from 'class-validator';
+export class CreateShoeDto {
     @IsString()
     @IsNotEmpty()
     name: string
@@ -19,4 +19,12 @@ export class CreateClientDto {
     @IsString()
     @IsNotEmpty()
     ced: string
+    
+    //Campo agregado Reciente en clase de Practica
+    
+    @IsString({each: true})
+    @IsArray()
+    @IsOptional()
+    images?: string[];
 }
+
